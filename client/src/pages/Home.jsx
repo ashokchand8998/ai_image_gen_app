@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { FormField, Card, Loader } from '../components'
+import { apiURI } from '../constants';
 
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) return data.map((post) => <Card key={post._id} {...post} />)
@@ -33,7 +34,7 @@ const Home = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v1/posts", {
+        const response = await fetch(`${apiURI}/posts`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ const Home = () => {
         }
 
       } catch (err) {
-        console.log("err:", err)
+        console.log("err:", ...err)
         alert(err)
       } finally {
         setLoading(false);

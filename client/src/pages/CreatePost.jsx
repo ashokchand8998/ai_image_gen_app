@@ -1,8 +1,19 @@
-import React, { useState } from 'react'
+/**
+ * Component for creating a new post.
+ *
+ * This component renders a form that allows the user to enter a name, prompt, and image.
+ * The form also includes a button to generate an image based on the prompt.
+ * The component uses the useState hook to manage the form state.
+ * The component uses the useNavigate hook from react-router-dom to navigate to the homepage after a post is created.
+ * The component uses the Loader component to display a loading indicator while the image is being generated.
+ * The component uses the getRandomPrompt function from the ../utils file to generate a random prompt.
+ * The component uses the FormField component to render the form fields.
+ */
+import { useState } from 'react';
 import { preview } from '../assets'
 import { useNavigate } from 'react-router-dom';
-import { FormField } from '../components';
-import { getRamdomPrompt } from '../utils'
+import { FormField, Loader } from '../components';
+import { getRandomPrompt } from '../utils'
 
 const CreatePost = () => {
   const navigate = useNavigate()
@@ -14,19 +25,80 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => { }
+  /**
+   * Handles form submission.
+   * Sends a POST request to the API to create a new post.
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/posts", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(form)
+        })
+
+        await response.json()
+        navigate('/')
+      } catch (err) {
+        console.log("err:", err)
+        alert("error: ", err)
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      alert("Please enter a prompt and generate an image")
+    }
+  }
+
+  /**
+   * Handles changes to the form fields.
+   * Updates the form state with the new values.
+   */
   const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     })
   }
+
+  /**
+   * Generates a random prompt for the user.
+   * Updates the form state with the new prompt.
+   */
   const handleSupriseMe = () => {
-    const randomPrompt = getRamdomPrompt(form.prompt);
+    const randomPrompt = getRandomPrompt(form.prompt);
     setForm({ ...form, prompt: randomPrompt })
   }
 
-  const generateImage = () => { }
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch('http://localhost:8080/api/v1/dalle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
+
+        const data = await response.json();
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` })
+      } catch (err) {
+        console.log("err:", err)
+        alert("error: ", err)
+      } finally {
+        setGeneratingImg(false)
+      }
+    } else {
+      alert("Plese enter a prompt")
+    }
+  }
 
   return (
     <section className='max-w-7xl mx-auto'>
@@ -91,7 +163,7 @@ const CreatePost = () => {
         </div>
 
         <div className='mt-10'>
-          <p className='mt-2 text-[#666e75] text=[14px]'>Once you have created the iamge you want, you canshare it with others in the community</p>
+          <p className='mt-2 text-[#666e75] text=[14px]'>Once you have created the image you want, you can share it with others in the community</p>
           <button type='submit'
             className='mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'
           >{loading ? 'Sharing...' : 'Share with the community'}</button>

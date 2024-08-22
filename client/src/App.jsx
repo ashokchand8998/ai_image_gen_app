@@ -1,8 +1,18 @@
-import React from 'react'
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
-import { logo } from './assets'
-import { Home, CreatePost } from './pages'
+/**
+ * Import necessary components from react-router-dom.
+ * BrowserRouter is used to enable client-side routing.
+ * Link is used to create links between routes.
+ * Route is used to define a route and its corresponding component.
+ * Routes is used to wrap all the routes.
+ */
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { logo } from './assets';
+import { Home, CreatePost } from './pages';
 
+/**
+ * This component is the main entry point of the application.
+ * It renders the BrowserRouter and defines the routes for the application.
+ */
 const App = () => {
   return (
     <BrowserRouter>
@@ -14,7 +24,6 @@ const App = () => {
           Create
         </Link>
       </header>
-
       <main className='sm:p-8 px-4 py-8 w-full bg-[#f9fafe] min-h-[calc(100vh-73px)]'>
         <Routes>
           <Route path='/' element={<Home />} />
@@ -22,7 +31,7 @@ const App = () => {
         </Routes>
       </main>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;

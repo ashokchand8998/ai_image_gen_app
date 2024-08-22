@@ -1,0 +1,21 @@
+{
+    "version": 2,
+    "name": "ai-image-gen-app",
+    "builds": [
+        {
+            "src": "index.js",
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": [
+                    "dist/**"
+                ]
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "index.js"
+        }
+    ]
+}
